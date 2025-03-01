@@ -1,0 +1,37 @@
+{
+  "name": "keeperto1pmigration",
+  "version": "1.0.0",
+  "description": "Keeper to 1Password migration project",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fanderssondev/keeperTo1PMigration.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fanderssondev/keeperTo1PMigration/issues"
+  },
+  "homepage": "https://github.com/fanderssondev/keeperTo1PMigration#readme",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.13.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "fast-csv": "^5.0.2",
+    "json-2-csv": "^5.5.8",
+    "multer": "^1.4.5-lts.1"
+  }
+}
