@@ -3,8 +3,8 @@ services:
   app:
     build: .
     ports:
-      - '3000:3000'
+      - '80:3000'
     volumes:
-      - .:/app
+      - /app/dist
     environment:
       NODE_ENV: production

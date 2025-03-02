@@ -1,4 +1,5 @@
-import fs from 'fs';
+import fs from 'fs/promises'; // For async file operations
+import { createWriteStream } from 'fs'; // For write streams
 import { format } from 'fast-csv';
 
 interface KeeperRecord {
@@ -10,37 +11,30 @@ interface KeeperRecord {
 }
 
 interface KeeperJson {
-  shared_folders?: any[]; // Assuming it's not used
+  shared_folders?: any[];
   records: KeeperRecord[];
 }
 
-export const jsonToCsv = (jsonPath: string, csvPath: string): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(jsonPath, 'utf8', (err, data) => {
-      if (err) {
-        console.error('❌ Error reading file:', err);
-        return reject(err);
-      }
+export const jsonToCsv = async (jsonPath: string, csvPath: string): Promise<void> => {
+  try {
+    // Read JSON file asynchronously
+    const data = await fs.readFile(jsonPath, 'utf8');
 
-      let jsonData: KeeperJson;
-      try {
-        jsonData = JSON.parse(data);
-        console.log('✅ Successfully parsed JSON file');
-      } catch (parseError) {
-        console.error('❌ Invalid JSON format:', parseError);
-        return reject(new Error('Invalid JSON format'));
-      }
+    // Parse JSON
+    const jsonData: KeeperJson = JSON.parse(data);
+    console.log('✅ Successfully parsed JSON file');
 
-      if (!jsonData.records || !Array.isArray(jsonData.records)) {
-        console.error("❌ Invalid JSON structure: 'records' array missing");
-        return reject(new Error("Invalid JSON structure: 'records' array missing"));
-      }
+    // Ensure valid structure
+    if (!jsonData.records || !Array.isArray(jsonData.records)) {
+      throw new Error("Invalid JSON structure: 'records' array missing");
+    }
+    console.log(`✅ Found ${jsonData.records.length} records in JSON file`);
 
-      console.log(`✅ Found ${jsonData.records.length} records in JSON file`);
+    // Convert JSON to CSV
+    const csvStream = format({ headers: true });
+    const writableStream = createWriteStream(csvPath); // ✅ Fixed here
 
-      const csvStream = format({ headers: true });
-      const writableStream = fs.createWriteStream(csvPath);
-
+    return new Promise((resolve, reject) => {
       writableStream.on('finish', () => {
         console.log('✅ Successfully wrote CSV file:', csvPath);
         resolve();
@@ -52,17 +46,20 @@ export const jsonToCsv = (jsonPath: string, csvPath: string): Promise<void> => {
 
       csvStream.pipe(writableStream);
 
-      jsonData.records.forEach((record: KeeperRecord) => {
+      jsonData.records.forEach((record) => {
         csvStream.write({
-          title: record.title ?? '',
-          type: record.$type ?? '',
-          login: record.login ?? '',
-          password: record.password ?? '',
-          login_url: record.login_url ?? '',
+          Title: record.title ?? '',
+          Notes: record.$type ?? '',
+          Username: record.login ?? '',
+          Password: record.password ?? '',
+          Website: record.login_url ?? '',
         });
       });
 
       csvStream.end();
     });
-  });
+  } catch (error) {
+    console.error('❌ Error in jsonToCsv:', error);
+    throw error; // Ensures proper error handling in calling functions
+  }
 };

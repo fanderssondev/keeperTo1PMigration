@@ -17,7 +17,7 @@ document.getElementById('uploadBtn').addEventListener('click', () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'converted.csv';
+      a.download = 'converted_record.csv';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

@@ -1,18 +1,16 @@
 import express from 'express';
-import multer from 'multer';
 import { jsonToCsv } from './converter';
-import cors from 'cors';
-import path from 'path';
 import fs from 'fs';
+import multer from 'multer';
 
 const app = express();
-const port = 3000;
+const PORT = 3000;
 
 // Configure multer for file uploads
 const upload = multer({ dest: 'uploads/' });
 
-app.use(cors());
-app.use(express.static('public')); // Serve frontend files
+// Serve frontend files
+app.use(express.static('public'));
 
 // File upload endpoint
 app.post('/upload', upload.single('file'), async (req, res): Promise<void> => {
@@ -33,7 +31,7 @@ app.post('/upload', upload.single('file'), async (req, res): Promise<void> => {
         console.error('❌ Error during file download:', err);
       }
 
-      // Safely delete files AFTER the download completes
+      // Safely delete files after the download completes
       try {
         if (fs.existsSync(jsonFilePath)) {
           fs.unlinkSync(jsonFilePath); // Delete original JSON file
@@ -52,6 +50,6 @@ app.post('/upload', upload.single('file'), async (req, res): Promise<void> => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
