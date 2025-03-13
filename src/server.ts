@@ -1,21 +1,21 @@
-import express from 'express';
-import { jsonToCsv } from './converter';
-import fs from 'fs';
-import multer from 'multer';
+import express from "express";
+import { jsonToCsv } from "./converter";
+import fs from "fs";
+import multer from "multer";
 
 const app = express();
 const PORT = 3000;
 
 // Configure multer for file uploads
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: "uploads/" });
 
 // Serve frontend files
-app.use(express.static('public'));
+app.use(express.static("public"));
 
 // File upload endpoint
-app.post('/upload', upload.single('file'), async (req, res): Promise<void> => {
+app.post("/upload", upload.single("file"), async (req, res): Promise<void> => {
   if (!req.file) {
-    res.status(400).json({ error: 'No file uploaded' });
+    res.status(400).json({ error: "No file uploaded" });
     return;
   }
 
@@ -26,9 +26,9 @@ app.post('/upload', upload.single('file'), async (req, res): Promise<void> => {
     await jsonToCsv(jsonFilePath, csvFilePath);
 
     // Send the file for download
-    res.download(csvFilePath, 'converted.csv', (err) => {
+    res.download(csvFilePath, "converted.csv", (err) => {
       if (err) {
-        console.error('❌ Error during file download:', err);
+        console.error("❌ Error during file download:", err);
       }
 
       // Safely delete files after the download completes
@@ -39,14 +39,14 @@ app.post('/upload', upload.single('file'), async (req, res): Promise<void> => {
         if (fs.existsSync(csvFilePath)) {
           fs.unlinkSync(csvFilePath); // Delete CSV file
         }
-        console.log('✅ Successfully deleted temporary files');
+        console.log("✅ Successfully deleted temporary files");
       } catch (deleteError) {
-        console.error('❌ Error deleting files:', deleteError);
+        console.error("❌ Error deleting files:", deleteError);
       }
     });
   } catch (error) {
-    console.error('❌ Conversion failed:', error);
-    res.status(500).json({ error: 'Conversion failed' });
+    console.error("❌ Conversion failed:", error);
+    res.status(500).json({ error: "Conversion failed" });
   }
 });
 
